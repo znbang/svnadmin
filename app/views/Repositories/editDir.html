@@ -1,0 +1,47 @@
+#{extends 'main.html' /}
+#{set title: repos.name + ':' + dir.name /}
+
+<h3><a href="@{show(repos.id)}">${repos.name}</a>:${dir.name}</h3>
+<hr>
+<div class="row">
+    <div class="col-md-4">
+        <h4>權限</h4>
+        <table class="table table-sm">
+            <th></th>
+            <th>唯讀</th>
+            <th>讀寫</th>
+            <th></th>
+            #{list perms, as:'perm'}
+            <tr>
+                <td>${perm.displayName}</td>
+                <td><input form="updatePermissionForm-${perm.userId}" name="permission" type="radio" value="r" onchange="this.form.submit()" ${perm.permission == 'r' ? 'checked' : ''}></td>
+                <td>
+                    <form id="updatePermissionForm-${perm.userId}" method="post" action="@{updatePermission(repos.id, dir.id)}">
+                        #{authenticityToken /}
+                        <input name="permission" type="radio" value="rw" onchange="this.form.submit()" ${perm.permission == 'rw' ? 'checked' : ''}>
+                        <input name="userId" type="hidden" value="${perm.userId}">
+                    </form>
+                </td>
+                <td>
+                    #{if perm.permission != ''}
+                        <form method="post" action="@{deletePermission(repos.id, dir.id, perm.id)}?x-http-method-override=DELETE">
+                            #{authenticityToken /}
+                            <button type="submit" class="btn btn-warning btn-sm">取消</button>
+                        </form>
+                    #{/if}
+                </td>
+            </tr>
+            #{/list}
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h4>目錄更名</h4>
+        <form method="post" action="@{updateDir(repos.id, dir.id)}">
+            #{authenticityToken /}
+            <div class="form-group">
+                <input type="text" class="form-control" name="name" value="${dir.name}">
+            </div>
+            <button type="submit" class="btn btn-primary">更新</button>
+        </form>
+    </div>
+</div>

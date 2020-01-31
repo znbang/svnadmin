@@ -1,0 +1,16 @@
+#{extends 'main.html' /}
+#{set title: '專案' /}
+
+#{if currentUser?.isAdmin()}
+<form class="form-inline">
+    <input type="text" name="name" class="form-control" placeholder="專案名稱">
+    <button type="submit" class="btn btn-primary">新增</button>
+</form>
+#{/if}
+<table class="table table-striped table-sm">
+    #{list repositories, as:'repos'}
+    <tr>
+        <td><a href="@{show(repos.id)}">${repos.name}</a></td>
+    </tr>
+    #{/list}
+</table>

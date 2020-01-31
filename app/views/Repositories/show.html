@@ -1,0 +1,107 @@
+#{extends 'main.html' /}
+#{set title: repos.name /}
+
+<h3><a href="@{show(repos.id)}">${repos.name}</a></h3>
+<hr>
+<div class="row">
+    <div class="col-md-4">
+        <h4>目錄</h4>
+        <table class="table table-sm">
+            #{list dirs, as:'dir'}
+            <tr>
+                <td><a href="@{editDir(repos.id, dir.id)}">${dir.name}</a></td>
+                <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteDirectoryModal-${dir.id}">刪除</button></td>
+            </tr>
+            #{/list}
+            <tr>
+                <td><input form="addDirForm" type="text" name="name" class="form-control form-control-sm" placeholder="目錄名稱"></td>
+                <td>
+                    <form id="addDirForm" method="post" action="@{addDir(repos.id)}">
+                        <button type="submit" class="btn btn-primary btn-sm">新增</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        #{list repos.directories, as:'dir'}
+            <div id="deleteDirectoryModal-${dir.id}" class="modal fade" data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">確定要刪除目錄 ${dir.name}？</div>
+                        <div class="modal-footer">
+                            <form method="post" action="@{deleteDir(repos.id, dir.id)}?x-http-method-override=DELETE">
+                                #{authenticityToken /}
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-danger">刪除</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        #{/list}
+
+        #{if currentUser.isAdmin()}
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteRepositoryModal">刪除專案</button>
+        <div id="deleteRepositoryModal" class="modal fade" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">確定要刪除專案？</div>
+                    <div class="modal-footer">
+                        <form method="post" action="@{delete(repos.id)}?x-http-method-override=DELETE">
+                            #{authenticityToken /}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-danger">刪除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        #{/if}
+    </div>
+    <div class="col-md-4">
+        <h4>專案成員</h4>
+        <table class="table table-striped table-sm table-hover">
+            #{list users, as:'user'}
+            <tr>
+                <td>${user.displayName}</td>
+                <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeUserModal-${user.id}">移除</button></td>
+            </tr>
+            #{/list}
+        </table>
+    </div>
+
+    #{list users, as:'user'}
+        <div id="removeUserModal-${user.id}" class="modal fade" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">確定要移除成員 ${user.displayName}？</div>
+                    <div class="modal-footer">
+                        <form method="post" action="@{removeUser(repos.id, user.id)}?x-http-method-override=DELETE">
+                            #{authenticityToken /}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-danger">移除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    #{/list}
+
+    <div class="col-md-4">
+        <h4>新增專案成員</h4>
+        <table class="table table-striped table-sm table-hover">
+            #{list others, as:'user'}
+            <tr>
+                <td>${user.displayName}</td>
+                <td>
+                    <form method="post" action="@{addUser(repos.id)}">
+                        #{authenticityToken /}
+                        <input type="hidden" name="userId" value="${user.id}">
+                        <button type="submit" class="btn btn-primary btn-sm">新增</button>
+                    </form>
+                </td>
+            </tr>
+            #{/list}
+        </table>
+    </div>
+</div>

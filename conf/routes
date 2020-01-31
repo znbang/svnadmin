@@ -1,0 +1,36 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                                       Application.index
+GET     /login                                  Authenticate.login
+POST    /login                                  Authenticate.auth
+GET     /logout                                 Authenticate.logout
+GET     /repositories                           Repositories.index
+GET     /repositories/{id}                      Repositories.show
+DELETE  /repositories/{id}                      Repositories.delete
+POST    /repositories/{id}/users                Repositories.addUser
+DELETE  /repositories/{id}/users/{userId}       Repositories.removeUser
+POST    /repositories/{id}/dirs                 Repositories.addDir
+GET     /repositories/{id}/dirs/{dirId}         Repositories.editDir
+POST    /repositories/{id}/dirs/{dirId}         Repositories.updateDir
+DELETE  /repositories/{id}/dirs/{dirId}         Repositories.deleteDir
+POST    /repositories/{id}/dirs/{dirId}/perms   Repositories.updatePermission
+DELETE  /repositories/{id}/dirs/{dirId}/perms/{permId}  Repositories.deletePermission
+GET     /users                                  Users.index
+GET     /users/import                           Users.importUsers
+GET     /users/{id}/edit                        Users.edit
+POST    /users/{id}/edit                        Users.update
+POST    /users/{id}/repos                       Users.addRepository
+DELETE  /users/{id}/repos/{reposId}             Users.removeRepository
+GET     /permissions/export                     Permissions.export
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public
+
+# Catch all
+*       /{controller}/{action}                  {controller}.{action}
